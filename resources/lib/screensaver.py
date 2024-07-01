@@ -66,6 +66,37 @@ class Kaster(xbmcgui.WindowXMLDialog):
                 rand_index = randint(0, len(self.images) - 1)
                 current_image = self.images[rand_index]
 
+                if self.set_image(current_image) == False:
+                    continue
+                self.set_metadata(current_image)
+
+                # Pop image and wait
+                del self.images[rand_index]
+
+                # sleep for the configured time
+                wait_time = kodiutils.get_setting_as_int("wait-time-before-changing-image")
+                if self.exit_monitor.waitForAbort(wait_time) == True or self._isactive == False:
+                    break
+                # Check if images dict is empty, if so read the file again
+                if not self.images:
+                    self.get_images()
+
+    def set_image(self, current_image):
+        if "private" not in current_image:
+            # if it is a google image....
+            # check that kodi won't get 429 when fetching image
+            req = requests.head(url=current_image["url"])
+            if req.status_code == 429:   # (too many requests)
+                if self.exit_monitor.waitForAbort(5) == True:
+                    self._isactive = False
+                    return False    # skip if abort
+            elif req.status_code != 200:
+                return False    # skip if smth else and not 200
+
+        self.backgroud.setImage(current_image["url"])
+        return True
+
+    def set_metadata(self, current_image):
                 metadata = []
                 # if it is a google image....
                 if "private" not in current_image:
@@ -88,24 +119,25 @@ class Kaster(xbmcgui.WindowXMLDialog):
                         metadata.append(current_image["line1"])
                     if "line2" in current_image:
                         metadata.append(current_image["line2"])
+        metadata = []
+        # if it is a google image....
+        if "private" not in current_image:
+            if "location" in list(current_image.keys()):
+                metadata.append(current_image["location"])
+            if "photographer" in list(current_image.keys()):
+                metadata.append("%s %s" % (kodiutils.get_string(32001),
+                                                        self.utils.remove_unknown_author(current_image["photographer"])))
+        else:
+            # Logic for user owned photos - custom information
+            if "line1" in current_image:
+                metadata.append(current_image["line1"])
+            if "line2" in current_image:
+                metadata.append(current_image["line2"])
 
-                metadata.extend(["",""])
-                metadata_fields = [self.metadata_line2, self.metadata_line3]
-                for f,t in list(zip(metadata_fields,metadata)):
-                    f.setLabel(t)
-
-                # Insert photo
-                self.backgroud.setImage(current_image["url"])
-                # Pop image and wait
-                del self.images[rand_index]
-
-                # sleep for the configured time
-                wait_time = kodiutils.get_setting_as_int("wait-time-before-changing-image")
-                if self.exit_monitor.waitForAbort(wait_time) == True or self._isactive == False:
-                    break
-                # Check if images dict is empty, if so read the file again
-                if not self.images:
-                    self.get_images()
+        metadata.extend(["",""])
+        metadata_fields = [self.metadata_line2, self.metadata_line3]
+        for f,t in list(zip(metadata_fields,metadata)):
+            f.setLabel(t)
 
     def get_images(self, override=False):
         # Read google images from json file
