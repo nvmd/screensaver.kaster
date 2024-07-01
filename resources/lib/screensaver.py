@@ -64,10 +64,12 @@ class Kaster(xbmcgui.WindowXMLDialog):
         if self.images and self.exit_monitor:
             while self._isactive and not self.exit_monitor.abortRequested():
                 rand_index = randint(0, len(self.images) - 1)
+                current_image = self.images[rand_index]
 
+                metadata = []
                 # if it is a google image....
-                if "private" not in self.images[rand_index]:
-                    req = requests.head(url=self.images[rand_index]["url"])
+                if "private" not in current_image:
+                    req = requests.head(url=current_image["url"])
                     if req.status_code != 200:
                         # sleep for a bit to avoid 429 (too many requests)
                         if req.status_code == 429:
@@ -75,33 +77,25 @@ class Kaster(xbmcgui.WindowXMLDialog):
                                 break
                         continue
 
-                    # photo metadata
-                    if "location" in list(self.images[rand_index].keys()) and "photographer" in list(self.images[rand_index].keys()):
-                        self.metadata_line2.setLabel(self.images[rand_index]["location"])
-                        self.metadata_line3.setLabel("%s %s" % (kodiutils.get_string(32001),
-                                                                self.utils.remove_unknown_author(self.images[rand_index]["photographer"])))
-                    elif "location" in list(self.images[rand_index].keys()) and "photographer" not in list(self.images[rand_index].keys()):
-                        self.metadata_line2.setLabel(self.images[rand_index]["location"])
-                        self.metadata_line3.setLabel("")
-                    elif "location" not in list(self.images[rand_index].keys()) and "photographer" in list(self.images[rand_index].keys()):
-                        self.metadata_line2.setLabel("%s %s" % (kodiutils.get_string(32001),
-                                                                self.utils.remove_unknown_author(self.images[rand_index]["photographer"])))
-                        self.metadata_line3.setLabel("")
-                    else:
-                        self.metadata_line2.setLabel("")
-                        self.metadata_line3.setLabel("")
+                    if "location" in list(current_image.keys()):
+                        metadata.append(current_image["location"])
+                    if "photographer" in list(current_image.keys()):
+                        metadata.append("%s %s" % (kodiutils.get_string(32001),
+                                                                self.utils.remove_unknown_author(current_image["photographer"])))
                 else:
                     # Logic for user owned photos - custom information
-                    if "line1" in self.images[rand_index]:
-                        self.metadata_line2.setLabel(self.images[rand_index]["line1"])
-                    else:
-                        self.metadata_line2.setLabel("")
-                    if "line2" in self.images[rand_index]:
-                        self.metadata_line3.setLabel(self.images[rand_index]["line2"])
-                    else:
-                        self.metadata_line3.setLabel("")
+                    if "line1" in current_image:
+                        metadata.append(current_image["line1"])
+                    if "line2" in current_image:
+                        metadata.append(current_image["line2"])
+
+                metadata.extend(["",""])
+                metadata_fields = [self.metadata_line2, self.metadata_line3]
+                for f,t in list(zip(metadata_fields,metadata)):
+                    f.setLabel(t)
+
                 # Insert photo
-                self.backgroud.setImage(self.images[rand_index]["url"])
+                self.backgroud.setImage(current_image["url"])
                 # Pop image and wait
                 del self.images[rand_index]
 
