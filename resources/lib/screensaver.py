@@ -65,10 +65,6 @@ class Kaster(xbmcgui.WindowXMLDialog):
             self.get_images()
             for img in self.images:
                 current_image = img
-        if self.images and self.exit_monitor:
-            while self._isactive and not self.exit_monitor.abortRequested():
-                rand_index = randint(0, len(self.images) - 1)
-                current_image = self.images[rand_index]
 
                 if self.set_image(current_image) == False:
                     continue
@@ -96,28 +92,6 @@ class Kaster(xbmcgui.WindowXMLDialog):
         return True
 
     def set_metadata(self, current_image):
-                metadata = []
-                # if it is a google image....
-                if "private" not in current_image:
-                    req = requests.head(url=current_image["url"])
-                    if req.status_code != 200:
-                        # sleep for a bit to avoid 429 (too many requests)
-                        if req.status_code == 429:
-                            if self.exit_monitor.waitForAbort(5) == True or self._isactive == False:
-                                break
-                        continue
-
-                    if "location" in list(current_image.keys()):
-                        metadata.append(current_image["location"])
-                    if "photographer" in list(current_image.keys()):
-                        metadata.append("%s %s" % (kodiutils.get_string(32001),
-                                                                self.utils.remove_unknown_author(current_image["photographer"])))
-                else:
-                    # Logic for user owned photos - custom information
-                    if "line1" in current_image:
-                        metadata.append(current_image["line1"])
-                    if "line2" in current_image:
-                        metadata.append(current_image["line2"])
         metadata = []
         # if it is a google image....
         if "private" not in current_image:
