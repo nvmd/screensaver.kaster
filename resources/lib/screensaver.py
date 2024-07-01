@@ -57,10 +57,14 @@ class Kaster(xbmcgui.WindowXMLDialog):
         self.metadata_line2 = self.getControl(32503)
         self.metadata_line3 = self.getControl(32504)
 
-        # Grab images
-        self.get_images()
-
         # Start Image display loop
+        self.update_image()
+
+    def update_image(self):
+        while self._isactive and not self.exit_monitor.abortRequested():
+            self.get_images()
+            for img in self.images:
+                current_image = img
         if self.images and self.exit_monitor:
             while self._isactive and not self.exit_monitor.abortRequested():
                 rand_index = randint(0, len(self.images) - 1)
@@ -70,16 +74,11 @@ class Kaster(xbmcgui.WindowXMLDialog):
                     continue
                 self.set_metadata(current_image)
 
-                # Pop image and wait
-                del self.images[rand_index]
-
-                # sleep for the configured time
+                # keep image on the screen for the configured time
                 wait_time = kodiutils.get_setting_as_int("wait-time-before-changing-image")
                 if self.exit_monitor.waitForAbort(wait_time) == True or self._isactive == False:
+                    self._isactive = False
                     break
-                # Check if images dict is empty, if so read the file again
-                if not self.images:
-                    self.get_images()
 
     def set_image(self, current_image):
         if "private" not in current_image:
