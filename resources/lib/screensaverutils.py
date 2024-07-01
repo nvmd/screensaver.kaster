@@ -31,13 +31,11 @@ class ScreenSaverUtils:
         self.images.append(image)
 
     def __get_images_recursively(self, path):
-        folders, files = xbmcvfs.listdir(xbmcvfs.translatePath(path))
+        folders, files = xbmcvfs.listdir(path)
         for _file in files:
-            self.__append_image(os.path.join(xbmcvfs.translatePath(path), _file))
-        if folders:
-            for folder in folders:
-                path = os.path.join(path,folder)
-                self.__get_images_recursively(path)
+            self.__append_image(os.path.join(path, _file))
+        for folder in folders:
+            self.__get_images_recursively(os.path.join(path, folder))
 
     def get_all_images(self):
         return self.images
