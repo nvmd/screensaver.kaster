@@ -9,6 +9,7 @@
 import xbmc
 import os
 import json
+import itertools
 import requests
 import xbmcgui
 import xbmcaddon
@@ -53,12 +54,27 @@ class Kaster(xbmcgui.WindowXMLDialog):
         # Register screensaver deactivate callback function
         self.exit_monitor = self.ExitMonitor(self.exit)
         # Init controls
-        self.backgroud = self.getControl(32500)
+
+        self.imageBuffers = [32500,32501]
+        self.currentImgId = self.imageBuffers[0]
+        self.nextImgId = self.imageBuffers[1]
+        
         self.metadata_line2 = self.getControl(32503)
         self.metadata_line3 = self.getControl(32504)
 
         # Start Image display loop
         self.update_image()
+
+
+    def setImage(self, image):
+        self.getControl(self.currentImgId).setImage(image)
+
+        self.getControl(self.nextImgId).setVisible(False)
+        self.getControl(self.currentImgId).setVisible(True)
+
+        self.nextImgId = self.currentImgId
+        self.currentImgId = itertools.cycle(self.imageBuffers).__next__
+
 
     def update_image(self):
         while self._isactive and not self.exit_monitor.abortRequested():
@@ -92,7 +108,7 @@ class Kaster(xbmcgui.WindowXMLDialog):
             elif req.status_code != 200:
                 return False    # skip if smth else and not 200
 
-        self.backgroud.setImage(current_image["url"])
+        self.setImage(current_image["url"])
         return True
 
     def set_metadata(self, current_image):

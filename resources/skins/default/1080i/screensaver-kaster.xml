@@ -22,6 +22,18 @@
             <animation effect="zoom" start="110" end="130" center="auto" time="25000" tween="cubic" easing="inout" condition="StringCompare(Window.Property(animation),panzoom)" pulse="true">Conditional</animation>
             <animation effect="slide" start="-10,-10" end="20,20" time="9000" tween="cubic" easing="inout" condition="StringCompare(Window.Property(animation),panzoom)" pulse="true">Conditional</animation>
         </control>
+        <control type="image" id="32501">
+            <description>Fade image</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <fadetime>1000</fadetime>
+            <aspectratio scalediffuse="false" align="center" aligny="center">scale</aspectratio>
+            <width>1920</width>
+            <height>1080</height>
+            <texture></texture>
+            <animation effect="zoom" start="110" end="130" center="auto" time="25000" tween="cubic" easing="inout" condition="StringCompare(Window.Property(animation),panzoom)" pulse="true">Conditional</animation>
+            <animation effect="slide" start="-10,-10" end="20,20" time="9000" tween="cubic" easing="inout" condition="StringCompare(Window.Property(animation),panzoom)" pulse="true">Conditional</animation>
+        </control>
         <control type="image">
             <description>Overlay</description>
             <posx>0</posx>
