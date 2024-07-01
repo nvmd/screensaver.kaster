@@ -71,7 +71,8 @@ class Kaster(xbmcgui.WindowXMLDialog):
                     if req.status_code != 200:
                         # sleep for a bit to avoid 429 (too many requests)
                         if req.status_code == 429:
-                            self.exit_monitor.waitForAbort(5)
+                            if self.exit_monitor.waitForAbort(5) == True or self._isactive == False:
+                                break
                         continue
 
                     # photo metadata
@@ -103,10 +104,10 @@ class Kaster(xbmcgui.WindowXMLDialog):
                 self.backgroud.setImage(self.images[rand_index]["url"])
                 # Pop image and wait
                 del self.images[rand_index]
+
                 # sleep for the configured time
                 wait_time = kodiutils.get_setting_as_int("wait-time-before-changing-image")
-                self.exit_monitor.waitForAbort(wait_time)
-                if not self._isactive or self.exit_monitor.abortRequested():
+                if self.exit_monitor.waitForAbort(wait_time) == True or self._isactive == False:
                     break
                 # Check if images dict is empty, if so read the file again
                 if not self.images:
