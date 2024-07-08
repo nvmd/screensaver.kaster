@@ -14,6 +14,7 @@ import xbmcgui
 import xbmcaddon
 import xbmcvfs
 from . import kodiutils
+from .kodiutils import log
 from random import randint, shuffle
 from .screensaverutils import ScreenSaverUtils
 from .imagesource.filesystem import FileSystemImageSource
@@ -49,8 +50,6 @@ class Kaster(xbmcgui.WindowXMLDialog):
         self.images = []
         self.set_property()
         self.utils = ScreenSaverUtils()
-        self.fsImagesSrc = FileSystemImageSource(kodiutils.get_setting("my-pictures-folder"))
-        self.googlePhotosSrc = GooglePhotosSource(IMAGE_FILE)
 
     def onInit(self):
         self._isactive = True
@@ -62,12 +61,14 @@ class Kaster(xbmcgui.WindowXMLDialog):
         self.metadata_line3 = self.getControl(32504)
 
         # Start Image display loop
-        self.update_image()
+        self.update_image(self.get_image_sources())
 
-    def update_image(self):
+    def update_image(self,image_sources):
+        image_source = image_sources[0]
+        image_source.update()
         while self._isactive and not self.exit_monitor.abortRequested():
-            self.get_images()
-            for img in self.images:
+            try:
+                img = image_source.get_image()
                 current_image = img
 
                 if self.set_image(current_image) == False:
@@ -79,6 +80,10 @@ class Kaster(xbmcgui.WindowXMLDialog):
                 if self.exit_monitor.waitForAbort(wait_time) == True or self._isactive == False:
                     self._isactive = False
                     break
+            except StopIteration:
+                log("StopIteration: image source exhausted, needs refreshing", xbmc.LOGINFO)
+                image_source.update()
+                continue
 
     def set_image(self, current_image):
         if "private" not in current_image:
@@ -92,6 +97,7 @@ class Kaster(xbmcgui.WindowXMLDialog):
             elif req.status_code != 200:
                 return False    # skip if smth else and not 200
 
+        log("Setting image %s" % current_image["url"], xbmc.LOGINFO)
         self.backgroud.setImage(current_image["url"])
         return True
 
@@ -113,25 +119,22 @@ class Kaster(xbmcgui.WindowXMLDialog):
 
         metadata.extend(["",""])
         metadata_fields = [self.metadata_line2, self.metadata_line3]
-        for f,t in list(zip(metadata_fields,metadata)):
-            f.setLabel(t)
+        for field,text in list(zip(metadata_fields,metadata)):
+            field.setLabel(text)
 
-    def get_images(self):
-        self.images = []
+    def get_image_sources(self):
+        image_sources = []
 
         fallback_to_google = not self.is_google_photos_enabled() and not self.is_user_photos_enabled()
-        
+
         if self.is_google_photos_enabled() or fallback_to_google:
-            self.googlePhotosSrc.fetch()
-            self.images = self.googlePhotosSrc.get_all_images()
+            image_sources.append(GooglePhotosSource(IMAGE_FILE))
 
         if self.is_user_photos_enabled():
-            self.fsImagesSrc.fetch()
-            for image in self.fsImagesSrc.get_all_images():
-                self.images.append(image)
+            image_sources.append(FileSystemImageSource(kodiutils.get_setting("my-pictures-folder")))
 
-        shuffle(self.images)
-        return
+        return image_sources
+
 
     def is_google_photos_enabled(self):
         return kodiutils.get_setting_as_int("screensaver-mode") == 0 or kodiutils.get_setting_as_int("screensaver-mode") == 2

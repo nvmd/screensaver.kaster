@@ -13,6 +13,7 @@ import json as json
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo("id")
+ADDON_VERSION = '1.4.x'
 
 
 def notification(header, message, time=5000, icon=ADDON.getAddonInfo('icon'), sound=True):
@@ -23,14 +24,8 @@ def show_settings():
     ADDON.openSettings()
 
 
-def log(message,level):
-    prefix = b"[%s] " % ADDON_ID
-    formatter = prefix + b'%(name)s: %(message)s'
-    try:
-        xbmc.log(formatter, level)
-    except UnicodeEncodeError:
-        xbmc.log(formatter.encode(
-            'utf-8', 'ignore'), level)
+def log(msg, level=xbmc.LOGINFO):  #LOGDEBUG
+    xbmc.log('[%s %s] %s'%(ADDON_ID,ADDON_VERSION,msg),level)
 
 
 def get_setting(setting):
