@@ -16,6 +16,8 @@ import xbmcvfs
 from . import kodiutils
 from random import randint, shuffle
 from .screensaverutils import ScreenSaverUtils
+from .imagesource.filesystem import FileSystemImageSource
+from .imagesource.googlephotos import GooglePhotosSource
 
 PATH = xbmcaddon.Addon().getAddonInfo("path")
 
@@ -47,6 +49,8 @@ class Kaster(xbmcgui.WindowXMLDialog):
         self.images = []
         self.set_property()
         self.utils = ScreenSaverUtils()
+        self.fsImagesSrc = FileSystemImageSource(kodiutils.get_setting("my-pictures-folder"))
+        self.googlePhotosSrc = GooglePhotosSource(IMAGE_FILE)
 
     def onInit(self):
         self._isactive = True
@@ -112,24 +116,20 @@ class Kaster(xbmcgui.WindowXMLDialog):
         for f,t in list(zip(metadata_fields,metadata)):
             f.setLabel(t)
 
-    def get_images(self, forceOnlyGooglePhotos=False):
-        # Read google images from json file
+    def get_images(self):
         self.images = []
-        if self.is_google_photos_enabled() or forceOnlyGooglePhotos:
-            try:
-                with open(IMAGE_FILE, "r") as f:
-                    images = f.read()
-            except:
-                with open(IMAGE_FILE, "r", encoding="utf-8") as f:
-                    images = f.read()
-            self.images = json.loads(images)
-        # Check if we have images to append
-        if self.is_user_photos_enabled() and not forceOnlyGooglePhotos:
-            if kodiutils.get_setting("my-pictures-folder") and xbmcvfs.exists(xbmcvfs.translatePath(kodiutils.get_setting("my-pictures-folder"))):
-                for image in self.utils.get_own_pictures(kodiutils.get_setting("my-pictures-folder")):
-                    self.images.append(image)
-            else:
-                return self.get_images(forceOnlyGooglePhotos=True)
+
+        fallback_to_google = not self.is_google_photos_enabled() and not self.is_user_photos_enabled()
+        
+        if self.is_google_photos_enabled() or fallback_to_google:
+            self.googlePhotosSrc.fetch()
+            self.images = self.googlePhotosSrc.get_all_images()
+
+        if self.is_user_photos_enabled():
+            self.fsImagesSrc.fetch()
+            for image in self.fsImagesSrc.get_all_images():
+                self.images.append(image)
+
         shuffle(self.images)
         return
 
