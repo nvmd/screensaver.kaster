@@ -19,6 +19,7 @@ from random import randint, shuffle
 from .screensaverutils import ScreenSaverUtils
 from .imagesource.filesystem import FileSystemImageSource
 from .imagesource.googlephotos import GooglePhotosSource
+from .imagesource.googlearts import GoogleArtsSource
 
 PATH = xbmcaddon.Addon().getAddonInfo("path")
 
@@ -27,6 +28,7 @@ if not kodiutils.get_setting_as_bool("enable-hq"):
 else:
     IMAGE_FILE = os.path.join(PATH, "resources", "images", "chromecast-hq.json")
 
+ARTS_IMAGE_FILE = os.path.join(PATH, "resources", "images", "google-arts-and-culture.json")
 
 class Kaster(xbmcgui.WindowXMLDialog):
 
@@ -118,9 +120,12 @@ class Kaster(xbmcgui.WindowXMLDialog):
     def get_image_sources(self):
         image_sources = []
 
-        fallback_to_google = not self.is_google_photos_enabled() and not self.is_user_photos_enabled()
+        fallback_to_google_arts = not self.is_google_photos_enabled() and not self.is_user_photos_enabled()
 
-        if self.is_google_photos_enabled() or fallback_to_google:
+        if self.is_google_arts_enabled() or fallback_to_google_arts:
+            image_sources.append(GoogleArtsSource(ARTS_IMAGE_FILE))
+
+        if self.is_google_photos_enabled():
             image_sources.append(GooglePhotosSource(IMAGE_FILE))
 
         if self.is_user_photos_enabled():
