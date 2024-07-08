@@ -17,13 +17,6 @@ class ScreenSaverUtils:
     def __init__(self):
         self.images = []
 
-    @staticmethod
-    def remove_unknown_author(author):
-        if "unknown" in author.lower():
-            return kodiutils.get_string(32007)
-        else:
-            return author
-
     def __reset_images(self):
         self.images = []
 

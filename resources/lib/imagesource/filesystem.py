@@ -81,13 +81,16 @@ class FileSystemImageSource:
             if _file.lower().endswith(('.png', '.jpg', '.jpeg')):
                 returned_dict = {
                     "url": _file,
-                    "private": True
+                    "private": True,
+                    "metadata": {}
                 }
                 if images_dict:
                     for image in images_dict:
                         if "image" in list(image.keys()) and os.path.join(xbmcvfs.translatePath(path),image["image"]) == _file:
+                            metadata = {}
                             if "line1" in list(image.keys()):
-                                returned_dict["line1"] = image["line1"]
+                                metadata["line1"] = image["line1"]
                             if "line2" in list(image.keys()):
-                                returned_dict["line2"] = image["line2"]
+                                metadata["line2"] = image["line2"]
+                            returned_dict["metadata"] = metadata
                 yield returned_dict

@@ -68,8 +68,8 @@ class Kaster(xbmcgui.WindowXMLDialog):
         image_source.update()
         while self._isactive and not self.exit_monitor.abortRequested():
             try:
-                img = image_source.get_image()
-                current_image = img
+                current_image = image_source.get_image()
+                log("current_image: %s" % current_image, xbmc.LOGDEBUG)
 
                 if self.set_image(current_image) == False:
                     continue
@@ -97,25 +97,18 @@ class Kaster(xbmcgui.WindowXMLDialog):
             elif req.status_code != 200:
                 return False    # skip if smth else and not 200
 
-        log("Setting image %s" % current_image["url"], xbmc.LOGINFO)
+        log("Setting image %s" % current_image["url"], xbmc.LOGDEBUG)
         self.backgroud.setImage(current_image["url"])
         return True
 
     def set_metadata(self, current_image):
+        image_metadata = current_image["metadata"]
         metadata = []
-        # if it is a google image....
-        if "private" not in current_image:
-            if "location" in list(current_image.keys()):
-                metadata.append(current_image["location"])
-            if "photographer" in list(current_image.keys()):
-                metadata.append("%s %s" % (kodiutils.get_string(32001),
-                                                        self.utils.remove_unknown_author(current_image["photographer"])))
-        else:
-            # Logic for user owned photos - custom information
-            if "line1" in current_image:
-                metadata.append(current_image["line1"])
-            if "line2" in current_image:
-                metadata.append(current_image["line2"])
+
+        if "line1" in image_metadata and image_metadata["line1"]:
+            metadata.append(image_metadata["line1"])
+        if "line2" in image_metadata and image_metadata["line2"]:
+            metadata.append(image_metadata["line2"])
 
         metadata.extend(["",""])
         metadata_fields = [self.metadata_line2, self.metadata_line3]

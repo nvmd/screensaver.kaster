@@ -17,6 +17,12 @@ from random import shuffle
 def empty():
     yield from ()
 
+def localize_unknown(maybe_unknown):
+    if "unknown" in maybe_unknown.lower():
+        return kodiutils.get_string(32007)
+    else:
+        return maybe_unknown
+
 class GooglePhotosSource:
 
     def __init__(self, image_file_json_path):
@@ -56,7 +62,12 @@ class GooglePhotosSource:
             shuffle(image_entries)
             log("GP: Shuffled image entries: %s" % image_entries, xbmc.LOGDEBUG)
             for img in image_entries:
-                yield img
+                yield { "url": img["url"],
+                            "metadata": {
+                                "line1": img.get("location",""),
+                                "line2": localize_unknown(img.get("photographer",""))
+                            }
+                      }
         except ValueError:
             kodiutils.log(kodiutils.get_string(32010), xbmc.LOGERROR)
             return empty()
