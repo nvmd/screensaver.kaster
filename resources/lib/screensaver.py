@@ -112,10 +112,10 @@ class Kaster(xbmcgui.WindowXMLDialog):
         for f,t in list(zip(metadata_fields,metadata)):
             f.setLabel(t)
 
-    def get_images(self, override=False):
+    def get_images(self, forceOnlyGooglePhotos=False):
         # Read google images from json file
         self.images = []
-        if kodiutils.get_setting_as_int("screensaver-mode") == 0 or kodiutils.get_setting_as_int("screensaver-mode") == 2 or override:
+        if self.is_google_photos_enabled() or forceOnlyGooglePhotos:
             try:
                 with open(IMAGE_FILE, "r") as f:
                     images = f.read()
@@ -124,14 +124,19 @@ class Kaster(xbmcgui.WindowXMLDialog):
                     images = f.read()
             self.images = json.loads(images)
         # Check if we have images to append
-        if kodiutils.get_setting_as_int("screensaver-mode") == 1 or kodiutils.get_setting_as_int("screensaver-mode") == 2 and not override:
+        if self.is_user_photos_enabled() and not forceOnlyGooglePhotos:
             if kodiutils.get_setting("my-pictures-folder") and xbmcvfs.exists(xbmcvfs.translatePath(kodiutils.get_setting("my-pictures-folder"))):
                 for image in self.utils.get_own_pictures(kodiutils.get_setting("my-pictures-folder")):
                     self.images.append(image)
             else:
-                return self.get_images(override=True)
+                return self.get_images(forceOnlyGooglePhotos=True)
         shuffle(self.images)
         return
+
+    def is_google_photos_enabled(self):
+        return kodiutils.get_setting_as_int("screensaver-mode") == 0 or kodiutils.get_setting_as_int("screensaver-mode") == 2
+    def is_user_photos_enabled(self):
+        return kodiutils.get_setting_as_int("screensaver-mode") == 1 or kodiutils.get_setting_as_int("screensaver-mode") == 2
 
     def set_property(self):
         # Kodi does not yet allow scripts to ship font definitions
