@@ -44,6 +44,26 @@ msgctxt "#32006"
 msgid "Google photos + my photos"
 msgstr ""
 
+msgctxt "#32120"
+msgid "Google Arts & Culture"
+msgstr ""
+
+msgctxt "#32130"
+msgid "Google Photos"
+msgstr ""
+
+msgctxt "#32132"
+msgid "Google Photos: Enable high resolution pictures (2560x1440)"
+msgstr ""
+
+msgctxt "#32140"
+msgid "User's images (in file system)"
+msgstr ""
+
+msgctxt "#32142"
+msgid "User's images' location"
+msgstr ""
+
 msgctxt "#32007"
 msgid "Unknown"
 msgstr ""

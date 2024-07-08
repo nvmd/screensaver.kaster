@@ -23,7 +23,7 @@ from .imagesource.googlearts import GoogleArtsSource
 
 PATH = xbmcaddon.Addon().getAddonInfo("path")
 
-if not kodiutils.get_setting_as_bool("enable-hq"):
+if not kodiutils.get_setting_as_bool("google-photos-hq"):
     IMAGE_FILE = os.path.join(PATH, "resources", "images", "chromecast.json")
 else:
     IMAGE_FILE = os.path.join(PATH, "resources", "images", "chromecast-hq.json")
@@ -57,6 +57,7 @@ class Kaster(xbmcgui.WindowXMLDialog):
         self._isactive = True
         # Register screensaver deactivate callback function
         self.exit_monitor = self.ExitMonitor(self.exit)
+        self.migrate_settings()
         # Init controls
         self.backgroud = self.getControl(32500)
         self.metadata_line2 = self.getControl(32503)
@@ -129,15 +130,34 @@ class Kaster(xbmcgui.WindowXMLDialog):
             image_sources.append(GooglePhotosSource(IMAGE_FILE))
 
         if self.is_user_photos_enabled():
-            image_sources.append(FileSystemImageSource(kodiutils.get_setting("my-pictures-folder")))
+            image_sources.append(FileSystemImageSource(kodiutils.get_setting("user-images-fs-directory")))
 
         return image_sources
 
 
+    def migrate_settings(self):
+        log("Migrating settings", xbmc.LOGINFO)
+        if kodiutils.get_setting("enable-google-photos") or  kodiutils.get_setting("enable-user-images-fs"):
+            return
+
+        if kodiutils.get_setting_as_int("screensaver-mode") == 0 or kodiutils.get_setting_as_int("screensaver-mode") == 2:
+            kodiutils.set_setting("enable-google-photos", True)
+        if kodiutils.get_setting_as_int("screensaver-mode") == 1 or kodiutils.get_setting_as_int("screensaver-mode") == 2:
+            kodiutils.set_setting("enable-user-images-fs", True)
+
+        if kodiutils.get_setting_as_bool("enable-hq"):
+            kodiutils.set_setting("google-photos-hq", True)
+
+        user_images_dir = kodiutils.get_setting("my-pictures-folder")
+        if user_images_dir:
+            kodiutils.set_setting("user-images-fs-directory", user_images_dir)
+
+    def is_google_arts_enabled(self):
+        return kodiutils.get_setting_as_bool("enable-google-arts")
     def is_google_photos_enabled(self):
-        return kodiutils.get_setting_as_int("screensaver-mode") == 0 or kodiutils.get_setting_as_int("screensaver-mode") == 2
+        return kodiutils.get_setting_as_bool("enable-google-photos")
     def is_user_photos_enabled(self):
-        return kodiutils.get_setting_as_int("screensaver-mode") == 1 or kodiutils.get_setting_as_int("screensaver-mode") == 2
+        return kodiutils.get_setting_as_bool("enable-user-images-fs")
 
     def set_property(self):
         # Kodi does not yet allow scripts to ship font definitions
