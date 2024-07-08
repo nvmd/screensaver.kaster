@@ -1,7 +1,7 @@
 # Kodi Media Center language file
-# Addon Name: Kaster
-# Addon id: screensaver.kaster
-# Addon Provider: enen92
+# Addon Name: Kaster-NG
+# Addon id: screensaver.kaster-ng
+# Addon Provider: nvmd
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Addons\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#32000"
-msgid "Kaster"
+msgid "Kaster-NG"
 msgstr ""
 
 msgctxt "#32001"

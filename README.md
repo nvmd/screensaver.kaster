@@ -1,19 +1,19 @@
-# screensaver.kaster
+# screensaver.kaster-ng
 
 A chromecast-like screensaver for Kodi
 
-![logo](https://github.com/enen92/screensaver.kaster/raw/master/resources/images/icon.png)
+![logo](https://github.com/nvmd/screensaver.kaster/raw/master/resources/images/icon.png)
 
 Display beautiful pictures originally from the chromecast screensaver. You can also display your own photos along with some information present in the EXIF tags.
 
 ### Screenshots
 
-![screen1](https://github.com/enen92/screensaver.kaster/raw/master/resources/images/screenshot-1.png)
+![screen1](https://github.com/nvmd/screensaver.kaster/raw/master/resources/images/screenshot-1.png)
 
-![screen2](https://github.com/enen92/screensaver.kaster/raw/master/resources/images/screenshot-2.png)
+![screen2](https://github.com/nvmd/screensaver.kaster/raw/master/resources/images/screenshot-2.png)
 
-![screen3](https://github.com/enen92/screensaver.kaster/raw/master/resources/images/screenshot-3.png)
+![screen3](https://github.com/nvmd/screensaver.kaster/raw/master/resources/images/screenshot-3.png)
 
-![screen4](https://github.com/enen92/screensaver.kaster/raw/master/resources/images/screenshot-4.png)
+![screen4](https://github.com/nvmd/screensaver.kaster/raw/master/resources/images/screenshot-4.png)
 
 
