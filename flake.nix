@@ -21,7 +21,10 @@
       pythonPackages = pkgs.kodi.pythonPackages;
 
       compiler = pythonPackages.python;
-    in {
+    in { 
+      packages."kodistubs" = pkgs.callPackage ./kodistubs.nix {
+        inherit (pythonPackages) buildPythonPackage;
+      };
       devShells.default = pkgs.mkShell {
         packages = [
           (compiler.withPackages (ps: with ps; [
