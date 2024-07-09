@@ -29,6 +29,7 @@
         packages = [
           (compiler.withPackages (ps: with ps; [
             python-lsp-server
+            requests
           ]))
           self.packages.${system}."kodistubs"
         ];
