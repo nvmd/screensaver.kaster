@@ -2,3 +2,7 @@
 .idea/
 *.pyo
 __pycache__
+.direnv
+.DS_Store
+result
+result-*
