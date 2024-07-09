@@ -28,7 +28,6 @@
       devShells.default = pkgs.mkShell {
         packages = [
           (compiler.withPackages (ps: with ps; [
-            python-lsp-server
             requests
           ]))
           self.packages.${system}."kodistubs"
@@ -36,6 +35,7 @@
         nativeBuildInputs = with pkgs; [
           nil # lsp language server for nix
           nixpkgs-fmt
+          pythonPackages.python-lsp-server
         ];
       };
     });
