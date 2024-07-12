@@ -136,10 +136,10 @@ class Kaster(xbmcgui.WindowXMLDialog):
 
 
     def migrate_settings(self):
-        log("Migrating settings", xbmc.LOGINFO)
         if kodiutils.get_setting("enable-google-photos") or  kodiutils.get_setting("enable-user-images-fs"):
             return
 
+        log("Migrating settings", xbmc.LOGINFO)
         if kodiutils.get_setting_as_int("screensaver-mode") == 0 or kodiutils.get_setting_as_int("screensaver-mode") == 2:
             kodiutils.set_setting("enable-google-photos", True)
         if kodiutils.get_setting_as_int("screensaver-mode") == 1 or kodiutils.get_setting_as_int("screensaver-mode") == 2:
