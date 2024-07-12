@@ -59,7 +59,7 @@ class Kaster(xbmcgui.WindowXMLDialog):
         self.exit_monitor = self.ExitMonitor(self.exit)
         self.migrate_settings()
         # Init controls
-        self.backgroud = self.getControl(32500)
+        self.background = self.getControl(32500)
         self.metadata_line2 = self.getControl(32503)
         self.metadata_line3 = self.getControl(32504)
 
@@ -101,7 +101,7 @@ class Kaster(xbmcgui.WindowXMLDialog):
                 return False    # skip if smth else and not 200
 
         log("Setting image %s" % current_image["url"], xbmc.LOGDEBUG)
-        self.backgroud.setImage(current_image["url"])
+        self.background.setImage(current_image["url"])
         return True
 
     def set_metadata(self, current_image):
