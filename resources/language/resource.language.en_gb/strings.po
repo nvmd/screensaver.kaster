@@ -53,15 +53,15 @@ msgid "Google Photos"
 msgstr ""
 
 msgctxt "#32132"
-msgid "Google Photos: Enable high resolution pictures (2560x1440)"
+msgid "- High resolution pictures (2560x1440)"
 msgstr ""
 
 msgctxt "#32140"
-msgid "User's images (in file system)"
+msgid "User's images"
 msgstr ""
 
 msgctxt "#32142"
-msgid "User's images' location"
+msgid "- Location"
 msgstr ""
 
 msgctxt "#32007"
