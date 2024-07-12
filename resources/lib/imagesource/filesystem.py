@@ -78,7 +78,7 @@ class FileSystemImageSource:
         log("FS: Shuffled image file list: %s" % self.image_files, xbmc.LOGDEBUG)
 
         for _file in self.image_files:
-            if _file.lower().endswith(('.png', '.jpg', '.jpeg')):
+            if _file.lower().endswith(('.png', '.jpg', '.jpeg', '.heic')):
                 returned_dict = {
                     "url": _file,
                     "private": True,
