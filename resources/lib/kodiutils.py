@@ -13,7 +13,7 @@ import json as json
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo("id")
-ADDON_VERSION = '1.4.x'
+ADDON_VERSION = ADDON.getAddonInfo("version")
 
 
 def notification(header, message, time=5000, icon=ADDON.getAddonInfo('icon'), sound=True):
